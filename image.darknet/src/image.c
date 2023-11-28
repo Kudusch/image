@@ -180,6 +180,10 @@ image **load_alphabet()
 void draw_detections(image im, int num, float thresh, box *boxes, float **probs, char **names, image **alphabet, int classes)
 {
     int i;
+    FILE *fptr;
+
+    fptr = fopen("predictions.csv", "w");
+    fprintf(fptr, "label,prob,top,left,right,bottom\n");
 
     for(i = 0; i < num; ++i){
         int class = max_index(probs[i], classes);
@@ -221,9 +225,11 @@ void draw_detections(image im, int num, float thresh, box *boxes, float **probs,
             if (alphabet) {
                 image label = get_label(alphabet, names[class], (im.h*.03)/10);
                 draw_label(im, top + width, left, label, rgb);
+    		fprintf(fptr, "%s,%.6f,%d,%d,%d,%d\n", names[class], prob, top, left, right, bot);
             }
         }
     }
+    fclose(fptr);
 }
 
 void transpose_image(image im)
